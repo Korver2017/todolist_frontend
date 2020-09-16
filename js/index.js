@@ -59,29 +59,19 @@ $(document).ready (function () {
 
     $('.checkbox').each (function (i) {
       
-      if ($(this).is (':checked')) {
-        console.log (i);
+      if ($(this).is (':checked'))
         $todolist[i].checked = true;
-      }
 
       else {
         $todolist[i].checked = false;
       }
     });
 
-    console.log ($todolist);
-
     let $destroyLoader = $todolist.map (todo => {
-
-        if (todo.checked) {
-
+      
+      if (todo.checked) {
         axios.post ('http://localhost:3000/remove', {todo_id: todo.todo_id})
-        .then (res => {
-
-          console.log (res.data);
-
-          $retrieve ();
-        })
+          .then (res => $retrieve ())
       }
     });
 
