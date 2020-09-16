@@ -28,21 +28,30 @@ $(document).ready (function () {
       $todolist.forEach ((todo, i) => {
 
         $('.todo-list').append ($inputGroup);
-        $($('.todo-list').find ('.form-control')[i]).attr ('value', todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
+        $($('.todo-list').find ('.form-control')[i]).val (todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
+        // $($('.todo-list').find ('.form-control')[i]).attr ('value', todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
       });
     });
   }
 
   $retrieve ();
   
-  $('.create-button').click (function () {
+  $('.add-todo').click (function () {
 
-    axios.post ('http://localhost:3000/add', {todo_title: 'SCSS', todo_desc: 'Learn SCSS', submission_date: '2020-09-14'})
+    let todoTitle = $('.todo-title').val ()
+      , todoDesc = $('.todo-desc').val ()
+      , submitDate = $('.submit-date').val ()
+      ;
+
+    axios.post ('http://localhost:3000/add', {todo_title: todoTitle, todo_desc: todoDesc, submission_date: submitDate})
       .then (res => {
-        console.log (res.data);
 
         $retrieve ();
-      })
+
+        $('.todo-title').val ('');
+        $('.todo-desc').val ('');
+        $('.submit-date').val ('');
+      });
   });
 
   $('.update-button').click (function () {
@@ -68,7 +77,7 @@ $(document).ready (function () {
     });
 
     let $destroyLoader = $todolist.map (todo => {
-      
+
       if (todo.checked) {
         axios.post ('http://localhost:3000/remove', {todo_id: todo.todo_id})
           .then (res => $retrieve ())
