@@ -1,6 +1,8 @@
 $(document).ready (function () {
 
-  let $todolist;
+  let $todolist
+    , $updateData
+    ;
 
   let $retrieve = () => {
     axios.get ('http://localhost:3000/')
@@ -62,6 +64,31 @@ $(document).ready (function () {
 
         $todoItem.attr ('readonly', true).val ($todolist[$index].todo_title);
       });
+
+      $('.edit-confirm').click (function () {
+
+        let $editButton = $(this).parent ();
+
+        // $editButton.find ('button').hide ();
+        // $editButton.find ('.edit-todo').show ();
+
+        let $index = $editButton.parent ().index ()
+          , $todoItem = $($('.todo-item')[$index])
+          , $updatedTodo = $todolist[$index]
+          ;
+
+        $todoItem.attr ('readonly', true);
+        // $todoItem.attr ('readonly', true).val ($todolist[$index].todo_title);
+
+        console.log ($updatedTodo);
+
+        axios.put ('http://localhost:3000/update', {todo_id: $updatedTodo.todo_id, todo_title: $todoItem.val (), todo_desc: $updatedTodo.todo_desc, submission_date: '2020-09-16'})
+          .then (res => {
+            console.log (res.data);
+
+            $retrieve ();
+          })
+      })
     });
   }
 
