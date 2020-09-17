@@ -21,6 +21,11 @@ $(document).ready (function () {
             </div>
           </div>
           <input value="" readonly type="text" class="form-control">
+          <div class="edit-button">
+            <button class="edit-todo mx-1 btn btn-warning">Edit!</button>
+            <button class="edit-confirm mx-1 btn btn-success">Confirm!</button>
+            <button class="edit-cancel mx-1 btn btn-danger">Cancel!</button>
+          </div>
         </div>`;
 
       $('.todo-list').text (' ');
@@ -30,6 +35,18 @@ $(document).ready (function () {
         $('.todo-list').append ($inputGroup);
         $($('.todo-list').find ('.form-control')[i]).val (todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
         // $($('.todo-list').find ('.form-control')[i]).attr ('value', todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
+      });
+
+      $('.edit-todo').click (function () {
+
+        $(this).hide ();
+        $(this).siblings ().show ();
+      });
+
+      $('.edit-cancel').click (function () {
+
+        $(this).parent ().find ('button').hide ();
+        $(this).parent ().find ('.edit-todo').show ();
       });
     });
   }

@@ -6,6 +6,6 @@ body {
   background-color: rgb(190, 190, 190);
 }
 
-#app {
-  
+.edit-confirm, .edit-cancel {
+  display: none;
 }
