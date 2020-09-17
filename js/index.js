@@ -52,6 +52,22 @@ $(document).ready (function () {
     $updateTodo ();
   }
 
+  let $checkDeleteButton = () => {
+
+    $('.checkbox').change (function () {
+        
+      let $checked = Array.from ($('.checkbox')).some (function (c) {
+        return c.checked === true;
+      });
+
+      if ($checked)
+        $('.delete-todo').attr ('disabled', false);
+
+      else
+        $('.delete-todo').attr ('disabled', true);
+    });
+  }
+
   let $retrieve = () => {
 
     axios.get ('http://localhost:3000/')
@@ -92,6 +108,7 @@ $(document).ready (function () {
         $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
       });
 
+      $checkDeleteButton ();
       $editTodo ();
     });
   }
@@ -114,7 +131,7 @@ $(document).ready (function () {
       });
   });
 
-  $('.delete-button').click (function () {
+  $('.delete-todo').click (function () {
 
     $('.checkbox').each (function (i) {
       
@@ -130,7 +147,7 @@ $(document).ready (function () {
 
       if (todo.checked) {
         axios.post ('http://localhost:3000/remove', {todo_id: todo.todo_id})
-          .then (res => $retrieve ())
+          .then (res => $retrieve ());
       }
     });
 
