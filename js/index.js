@@ -4,6 +4,22 @@ $(document).ready (function () {
     , $updateData
     ;
 
+  let $cancelEdit = () => {
+
+    $('.edit-cancel').click (function () {
+
+      let $editButton = $(this).parent ();
+
+      $editButton.find ('button').hide ();
+      $editButton.find ('.edit-todo').show ();
+
+      let $index = $editButton.parent ().index ()
+        , $todoItem = $($('.todo-item')[$index]);
+
+      $todoItem.attr ('readonly', true).val ($todolist[$index].todo_item);
+    });
+  }
+  
   let $updateTodo = () => {
     
     $('.update-todo').click (function () {
@@ -22,10 +38,24 @@ $(document).ready (function () {
     });
   }
 
+  let $editTodo = () => {
+
+    $('.edit-todo').click (function () {
+
+      $(this).hide ();
+      $(this).siblings ().show ();
+
+      $(this).parent ().parent ().find ('.todo-item').attr ('readonly', false);
+    });
+
+    $cancelEdit ();
+    $updateTodo ();
+  }
+
   let $retrieve = () => {
 
     axios.get ('http://localhost:3000/')
-    .then (res => {
+      .then (res => {
 
       $todolist = res.data.map (d => {
         d.checked = false;
@@ -60,31 +90,9 @@ $(document).ready (function () {
 
         $('.todo-list').append ($inputGroup);
         $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
-        // $($('.todo-list').find ('.form-control')[i]).attr ('value', todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
       });
 
-      $('.edit-todo').click (function () {
-
-        $(this).hide ();
-        $(this).siblings ().show ();
-
-        $(this).parent ().parent ().find ('.todo-item').attr ('readonly', false);
-      });
-
-      $('.edit-cancel').click (function () {
-
-        let $editButton = $(this).parent ();
-
-        $editButton.find ('button').hide ();
-        $editButton.find ('.edit-todo').show ();
-
-        let $index = $editButton.parent ().index ()
-          , $todoItem = $($('.todo-item')[$index]);
-
-        $todoItem.attr ('readonly', true).val ($todolist[$index].todo_item);
-      });
-
-      $updateTodo ();
+      $editTodo ();
     });
   }
 
