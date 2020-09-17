@@ -40,7 +40,7 @@ $(document).ready (function () {
       $todolist.forEach ((todo, i) => {
 
         $('.todo-list').append ($inputGroup);
-        $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
+        $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item + ', ' + todo.date);
         // $($('.todo-list').find ('.form-control')[i]).attr ('value', todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
       });
 
