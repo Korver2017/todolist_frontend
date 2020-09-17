@@ -17,15 +17,20 @@ $(document).ready (function () {
         `<div class="input-group mt-3">
           <div class="input-group-prepend">
             <div class="input-group-text">
+
               <input class="checkbox" type="checkbox" aria-label="Checkbox for following text input">
+
             </div>
           </div>
-          <input value="" readonly type="text" class="form-control">
+
+          <input value="" readonly type="text" class="todo-item form-control">
+
           <div class="edit-button">
             <button class="edit-todo mx-1 btn btn-warning">Edit!</button>
             <button class="edit-confirm mx-1 btn btn-success">Confirm!</button>
             <button class="edit-cancel mx-1 btn btn-danger">Cancel!</button>
           </div>
+
         </div>`;
 
       $('.todo-list').text (' ');
@@ -33,7 +38,7 @@ $(document).ready (function () {
       $todolist.forEach ((todo, i) => {
 
         $('.todo-list').append ($inputGroup);
-        $($('.todo-list').find ('.form-control')[i]).val (todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
+        $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
         // $($('.todo-list').find ('.form-control')[i]).attr ('value', todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
       });
 
@@ -41,12 +46,21 @@ $(document).ready (function () {
 
         $(this).hide ();
         $(this).siblings ().show ();
+
+        $(this).parent ().parent ().find ('.todo-item').attr ('readonly', false);
       });
 
       $('.edit-cancel').click (function () {
 
-        $(this).parent ().find ('button').hide ();
-        $(this).parent ().find ('.edit-todo').show ();
+        let $editButton = $(this).parent ();
+
+        $editButton.find ('button').hide ();
+        $editButton.find ('.edit-todo').show ();
+
+        let $index = $editButton.parent ().index ()
+          , $todoItem = $($('.todo-item')[$index]);
+
+        $todoItem.attr ('readonly', true).val ($todolist[$index].todo_title);
       });
     });
   }
