@@ -40,7 +40,7 @@ $(document).ready (function () {
       $todolist.forEach ((todo, i) => {
 
         $('.todo-list').append ($inputGroup);
-        $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item + ', ' + todo.date);
+        $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
         // $($('.todo-list').find ('.form-control')[i]).attr ('value', todo.todo_id + ', ' + todo.todo_title + ', ' + todo.todo_desc);
       });
 
@@ -62,7 +62,7 @@ $(document).ready (function () {
         let $index = $editButton.parent ().index ()
           , $todoItem = $($('.todo-item')[$index]);
 
-        $todoItem.attr ('readonly', true).val ($todolist[$index].todo_title);
+        $todoItem.attr ('readonly', true).val ($todolist[$index].todo_item);
       });
 
       $('.edit-confirm').click (function () {
@@ -74,15 +74,12 @@ $(document).ready (function () {
 
         let $index = $editButton.parent ().index ()
           , $todoItem = $($('.todo-item')[$index])
-          , $updatedTodo = $todolist[$index]
+          , $id = $todolist[$index].todo_id
           ;
 
         $todoItem.attr ('readonly', true);
-        // $todoItem.attr ('readonly', true).val ($todolist[$index].todo_title);
 
-        console.log ($updatedTodo);
-
-        axios.put ('http://localhost:3000/update', {todo_id: $updatedTodo.todo_id, todo_title: $todoItem.val (), todo_desc: $updatedTodo.todo_desc, submission_date: '2020-09-16'})
+        axios.put ('http://localhost:3000/update', {todo_id: $id, todo_item: $todoItem.val ()})
           .then (res => {
             console.log (res.data);
 
@@ -96,12 +93,9 @@ $(document).ready (function () {
   
   $('.add-todo').click (function () {
 
-    let todoTitle = $('.todo-title').val ()
-      , todoDesc = $('.todo-desc').val ()
-      , submitDate = $('.submit-date').val ()
-      ;
+    let newTodo = $('.new-todo').val ();
 
-    axios.post ('http://localhost:3000/add', {todo_title: todoTitle, todo_desc: todoDesc, submission_date: submitDate})
+    axios.post ('http://localhost:3000/add', {todo_item: newTodo})
       .then (res => {
 
         $retrieve ();
@@ -109,6 +103,7 @@ $(document).ready (function () {
         $('.todo-title').val ('');
         $('.todo-desc').val ('');
         $('.submit-date').val ('');
+        $('.new-todo').val ('');
       });
   });
 
