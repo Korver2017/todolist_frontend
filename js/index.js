@@ -4,7 +4,26 @@ $(document).ready (function () {
     , $updateData
     ;
 
+  let $updateTodo = () => {
+    
+    $('.update-todo').click (function () {
+
+      let $editButton = $(this).parent ();
+
+      let $index = $editButton.parent ().index ()
+        , $todoItem = $($('.todo-item')[$index])
+        , $id = $todolist[$index].todo_id
+        ;
+
+      $todoItem.attr ('readonly', true);
+
+      axios.put ('http://localhost:3000/update', {todo_id: $id, todo_item: $todoItem.val ()})
+        .then (res => $retrieve ());
+    });
+  }
+
   let $retrieve = () => {
+
     axios.get ('http://localhost:3000/')
     .then (res => {
 
@@ -29,7 +48,7 @@ $(document).ready (function () {
 
           <div class="edit-button">
             <button class="edit-todo mx-1 btn btn-warning">Edit!</button>
-            <button class="edit-confirm mx-1 btn btn-success">Confirm!</button>
+            <button class="update-todo mx-1 btn btn-success">Confirm!</button>
             <button class="edit-cancel mx-1 btn btn-danger">Cancel!</button>
           </div>
 
@@ -65,27 +84,7 @@ $(document).ready (function () {
         $todoItem.attr ('readonly', true).val ($todolist[$index].todo_item);
       });
 
-      $('.edit-confirm').click (function () {
-
-        let $editButton = $(this).parent ();
-
-        // $editButton.find ('button').hide ();
-        // $editButton.find ('.edit-todo').show ();
-
-        let $index = $editButton.parent ().index ()
-          , $todoItem = $($('.todo-item')[$index])
-          , $id = $todolist[$index].todo_id
-          ;
-
-        $todoItem.attr ('readonly', true);
-
-        axios.put ('http://localhost:3000/update', {todo_id: $id, todo_item: $todoItem.val ()})
-          .then (res => {
-            console.log (res.data);
-
-            $retrieve ();
-          })
-      })
+      $updateTodo ();
     });
   }
 
@@ -105,16 +104,6 @@ $(document).ready (function () {
         $('.submit-date').val ('');
         $('.new-todo').val ('');
       });
-  });
-
-  $('.update-button').click (function () {
-
-    axios.put ('http://localhost:3000/update', {todo_id: 16, todo_title: 'CSS', todo_desc: 'Learn CSS', submission_date: '2020-09-16'})
-      .then (res => {
-        console.log (res.data);
-
-        $retrieve ();
-      })
   });
 
   $('.delete-button').click (function () {
