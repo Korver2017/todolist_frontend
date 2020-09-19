@@ -3,25 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Todo List</title>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css' />
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
   <div id="app">
-  
-    <h1>Hello Todolist!</h1>
 
-    <div>
-      <button class="create-button btn btn-success">CREATE!</button>
-      <button class="update-button btn btn-warning">UPDATE!</button>
-      <button class="delete-button btn btn-danger">DELETE!</button>
+    <div class="container">
+
+      <div class="row">
+        <div class="col-12">
+          <h1 class="text-center">Hello Todolist!</h1>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 text-center">
+          <!-- <button class="update-button btn btn-warning">UPDATE!</button> -->
+          <button disabled class="delete-todo btn btn-danger">DELETE!</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="input-group my-3">
+
+            <input type="text" class="mx-1 new-todo form-control" placeholder="New Todo Title" aria-label="Recipient's username"
+              aria-describedby="button-addon2">
+
+            <div class="input-group-append">
+              <button class="add-todo btn btn-success" type="button" id="button-addon2">Add New Todo!</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="todo-list"></div>
+        </div>
+      </div>
+
     </div>
-
+    
   </div>
 
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src=".js/index.js"></script>
+  <script src="./js/index.js"></script>
 </body>
 </html>
