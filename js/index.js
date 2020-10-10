@@ -52,7 +52,7 @@ $(document).ready (function () {
     $updateTodo ();
   }
 
-  let $checkDeleteButton = () => {
+  let $checkButtonState = () => {
 
     $('.checkbox').change (function () {
         
@@ -60,11 +60,15 @@ $(document).ready (function () {
         return c.checked === true;
       });
 
-      if ($checked)
+      if ($checked) {
+        $('.done-todo').attr ('disabled', false);
         $('.delete-todo').attr ('disabled', false);
+      }
 
-      else
+      else {
+        $('.done-todo').attr ('disabled', true);
         $('.delete-todo').attr ('disabled', true);
+      }
     });
   }
 
@@ -108,7 +112,7 @@ $(document).ready (function () {
         $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
       });
 
-      $checkDeleteButton ();
+      $checkButtonState ();
       $editTodo ();
     });
   }
@@ -119,8 +123,11 @@ $(document).ready (function () {
 
     let newTodo = $('.new-todo').val ();
 
+    // axios.post ('http://localhost:3000/add', {})
     axios.post ('http://localhost:3000/add', {todo_item: newTodo})
       .then (res => {
+
+        console.log (res.data);
 
         $retrieve ();
 
@@ -128,7 +135,13 @@ $(document).ready (function () {
         $('.todo-desc').val ('');
         $('.submit-date').val ('');
         $('.new-todo').val ('');
-      });
+      })
+      .catch (err => {
+
+        console.log (err);
+        
+        console.log (err.response);
+      })
   });
 
   $('.delete-todo').click (function () {
@@ -146,7 +159,7 @@ $(document).ready (function () {
     let $destroyLoader = $todolist.map (todo => {
 
       if (todo.checked) {
-        axios.post ('http://localhost:3000/remove', {todo_id: todo.todo_id})
+        axios.post ('http://localhost:3000/remove', {id: todo.id})
           .then (res => $retrieve ());
       }
     });
