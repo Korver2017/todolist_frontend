@@ -28,12 +28,12 @@ $(document).ready (function () {
 
       let $index = $editButton.parent ().index ()
         , $todoItem = $($('.todo-item')[$index])
-        , $id = $todolist[$index].todo_id
+        , $id = $todolist[$index].id
         ;
 
       $todoItem.attr ('readonly', true);
 
-      axios.put ('http://localhost:3000/update', {todo_id: $id, todo_item: $todoItem.val ()})
+      axios.put ('http://localhost:3000/update', {id: $id, todo_item: $todoItem.val ()})
         .then (res => $retrieve ());
     });
   }
@@ -77,44 +77,44 @@ $(document).ready (function () {
     axios.get ('http://localhost:3000/')
       .then (res => {
 
-      $todolist = res.data.map (d => {
-        d.checked = false;
-        return d;
-      });
+        $todolist = res.data.map (d => {
+          d.checked = false;
+          return d;
+        });
 
-      console.log ($todolist);
-      
-      let $inputGroup = 
-        `<div class="input-group mt-3">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
+        console.log ($todolist);
+        
+        let $inputGroup = 
+          `<div class="input-group mt-3">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
 
-              <input class="checkbox" type="checkbox" aria-label="Checkbox for following text input">
+                <input class="checkbox" type="checkbox" aria-label="Checkbox for following text input">
 
+              </div>
             </div>
-          </div>
 
-          <input value="" readonly type="text" class="todo-item form-control">
+            <input value="" readonly type="text" class="todo-item form-control">
 
-          <div class="edit-button">
-            <button class="edit-todo mx-1 btn btn-warning">Edit!</button>
-            <button class="update-todo mx-1 btn btn-success">Confirm!</button>
-            <button class="edit-cancel mx-1 btn btn-danger">Cancel!</button>
-          </div>
+            <div class="edit-button">
+              <button class="edit-todo mx-1 btn btn-warning">Edit!</button>
+              <button class="update-todo mx-1 btn btn-success">Confirm!</button>
+              <button class="edit-cancel mx-1 btn btn-danger">Cancel!</button>
+            </div>
 
-        </div>`;
+          </div>`;
 
-      $('.todo-list').text (' ');
+        $('.todo-list').text (' ');
 
-      $todolist.forEach ((todo, i) => {
+        $todolist.forEach ((todo, i) => {
 
-        $('.todo-list').append ($inputGroup);
-        $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
+          $('.todo-list').append ($inputGroup);
+          $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
+        });
+
+        $checkButtonState ();
+        $editTodo ();
       });
-
-      $checkButtonState ();
-      $editTodo ();
-    });
   }
 
   $retrieve ();
@@ -122,6 +122,8 @@ $(document).ready (function () {
   $('.add-todo').click (function () {
 
     let newTodo = $('.new-todo').val ();
+
+    console.log (newTodo);
 
     // axios.post ('http://localhost:3000/add', {})
     axios.post ('http://localhost:3000/add', {todo_item: newTodo})
@@ -156,15 +158,30 @@ $(document).ready (function () {
       }
     });
 
-    let $destroyLoader = $todolist.map (todo => {
+    //? Need to Refactoring to Closure
+
+    let wantToDelete = {
+      items: [],
+      ids: [],
+    };
+
+    $todolist.forEach (todo => {
 
       if (todo.checked) {
-        axios.post ('http://localhost:3000/remove', {id: todo.id})
-          .then (res => $retrieve ());
+        wantToDelete.items.push (todo.todo_item);
+        wantToDelete.ids.push (todo.id);
       }
     });
 
-    Promise.all ($destroyLoader);
+    if (confirm (`Are you sure to delete \"${wantToDelete.items.join ('\", \"')}\"?`)) {
+
+      let $destroyLoader = wantToDelete.ids.map (id => {
+        return axios.post ('http://localhost:3000/remove', {id: id});
+      });
+
+      Promise.all ($destroyLoader)
+        .then (() => $retrieve ());
+    }
   });
 
 });
