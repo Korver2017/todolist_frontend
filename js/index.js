@@ -34,40 +34,57 @@ $(document).ready (function () {
       $todoItem.attr ('readonly', true);
 
       axios.put ('http://localhost:3000/update', {id: $id, todo_item: $todoItem.val ()})
-        .then (res => $retrieve ());
+        .then (res => {
+
+          console.log (res.data);
+
+          $editButton.show ();
+          $editButton.siblings ().hide ();
+          $retrieve ();
+        });
     });
   }
 
   let $editTodo = () => {
 
-    $('.edit-todo').click (function () {
+    let $editTodo = $('.edit-todo');
 
-      $(this).hide ();
-      $(this).siblings ().show ();
+    $editTodo.click (function () {
 
-      $(this).parent ().parent ().find ('.todo-item').attr ('readonly', false);
+      let $this = $(this)
+        , $index = $editTodo.index ($this)
+        ;
+
+      $this.hide ();
+      $this.siblings ().show ();
+
+      $($('.todo-item')[$index]).attr ('readonly', false);
     });
+
+    //? TODO: Check 2 below function
 
     $cancelEdit ();
     $updateTodo ();
-  }
+  };
 
   let $checkButtonState = () => {
 
     $('.checkbox').change (function () {
         
-      let $checked = Array.from ($('.checkbox')).some (function (c) {
-        return c.checked === true;
-      });
+      let $checked = Array.from ($('.checkbox')).some (c => c.checked === true);
+
+      let $doneTodo = $('.done-todo')
+        , $deleteTodo = $('.delete-todo')
+        ;
 
       if ($checked) {
-        $('.done-todo').attr ('disabled', false);
-        $('.delete-todo').attr ('disabled', false);
+        $doneTodo.attr ('disabled', false);
+        $deleteTodo.attr ('disabled', false);
       }
 
       else {
-        $('.done-todo').attr ('disabled', true);
-        $('.delete-todo').attr ('disabled', true);
+        $doneTodo.attr ('disabled', true);
+        $deleteTodo.attr ('disabled', true);
       }
     });
   }
@@ -77,9 +94,9 @@ $(document).ready (function () {
     axios.get ('http://localhost:3000/')
       .then (res => {
 
-        $todolist = res.data.map (d => {
-          d.checked = false;
-          return d;
+        $todolist = res.data.map (todo => {
+          todo.checked = false;
+          return todo;
         });
 
         console.log ($todolist);
@@ -107,10 +124,11 @@ $(document).ready (function () {
         $('.todo-list').text (' ');
 
         $todolist.forEach ((todo, i) => {
-
           $('.todo-list').append ($inputGroup);
           $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
         });
+
+        //? TODO: Check Here
 
         $checkButtonState ();
         $editTodo ();
@@ -158,7 +176,7 @@ $(document).ready (function () {
       }
     });
 
-    //? Need to Refactoring to Closure
+    //? TODO: Refactoring to Closure
 
     let wantToDelete = {
       items: [],
@@ -170,18 +188,20 @@ $(document).ready (function () {
       if (todo.checked) {
         wantToDelete.items.push (todo.todo_item);
         wantToDelete.ids.push (todo.id);
-      }
+      };
+
+      return wantToDelete;
     });
 
-    if (confirm (`Are you sure to delete \"${wantToDelete.items.join ('\", \"')}\"?`)) {
+    //? TODO: Remove comments
 
-      let $destroyLoader = wantToDelete.ids.map (id => {
-        return axios.post ('http://localhost:3000/remove', {id: id});
-      });
+    // if (confirm (`Are you sure to delete \"${wantToDelete.items.join ('\", \"')}\"?`)) {
+
+      let $destroyLoader = wantToDelete.ids.map (id => axios.post ('http://localhost:3000/remove', {id: id}));
 
       Promise.all ($destroyLoader)
         .then (() => $retrieve ());
-    }
+    // }
   });
 
 });
