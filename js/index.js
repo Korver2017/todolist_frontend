@@ -69,11 +69,12 @@ $(document).ready (function () {
 
   let $checkButtonState = () => {
 
-    $('.checkbox').change (function () {
-        
-      let $checked = Array.from ($('.checkbox')).some (c => c.checked === true);
+    let $checkbox = $('.checkbox');
 
-      let $doneTodo = $('.done-todo')
+    $checkbox.change (function () {
+        
+      let $checked = Array.from ($checkbox).some (c => c.checked === true)
+        , $doneTodo = $('.done-todo')
         , $deleteTodo = $('.delete-todo')
         ;
 
@@ -87,7 +88,7 @@ $(document).ready (function () {
         $deleteTodo.attr ('disabled', true);
       }
     });
-  }
+  };
 
   let $retrieve = () => {
 
@@ -130,6 +131,9 @@ $(document).ready (function () {
 
         //? TODO: Check Here
 
+        // Listen to change event of checkbox, then switch "DONE!" & "DELETE!" button state
+        
+        // Buttons state have to wait for todo list initialize, so we add function after retrieve data
         $checkButtonState ();
         $editTodo ();
       });
