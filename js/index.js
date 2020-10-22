@@ -1,28 +1,209 @@
-axios.get ('http://localhost:3000/')
-  .then (res => {
-    console.log (res.data);
-  })
+$(document).ready (function () {
 
-$('.create-button').click (function () {
+  //? TODO: Refactor to avoid using global variable.
 
-  axios.post ('http://localhost:3000/add', {todo_title: 'PHP', todo_desc: 'Learn PHP', submission_date: '2020-09-14'})
-    .then (res => {
-      console.log (res.data);
-    })
-});
+  let $todolist
+    , $updateData
+    ;
 
-$('.update-button').click (function () {
+  let $cancelEdit = () => {
 
-  axios.put('http://localhost:3000/update', { todo_id: 13, todo_title: 'MySQL', todo_desc: 'Learn MySQL', submission_date: '2020-09-14'})
-    .then (res => {
-      console.log (res.data);
-    })
-});
+    $('.edit-cancel').click (function () {
 
-$('.delete-button').click (function () {
+      let $editButton = $(this).parent ();
 
-  axios.post ('http://localhost:3000/remove', {todo_id: 13})
-    .then (res => {
-      console.log (res.data);
-    })
+      $editButton.find ('button').hide ();
+      $editButton.find ('.edit-todo').show ();
+
+      let $index = $editButton.parent ().index ()
+        , $todoItem = $($('.todo-item')[$index]);
+
+      $todoItem.attr ('readonly', true).val ($todolist[$index].todo_item);
+    });
+  }
+  
+  let $updateTodo = () => {
+    
+    $('.update-todo').click (function () {
+
+      let $this = $(this)
+        , $editButton = $this.parent ()
+        , $index = $editButton.parent ().index ()
+        , $todoItem = $($('.todo-item')[$index])
+        , $id = $todolist[$index].id
+        ;
+
+      $todoItem.attr ('readonly', true);
+
+      axios.put ('http://localhost:3000/update', {id: $id, todo_item: $todoItem.val ()})
+        .then (res => {
+
+          let $editTodo = $($('.edit-todo')[$index]);
+          
+          $editTodo.show ();
+          $editTodo.siblings ().hide ();
+          $retrieve ();
+        });
+    });
+  }
+
+  let $editTodo = () => {
+
+    let $editTodo = $('.edit-todo');
+
+    $editTodo.click (function () {
+
+      let $this = $(this)
+        , $index = $editTodo.index ($this)
+        , $todoItem = $($('.todo-item')[$index]);
+        ;
+
+      $this.hide ();
+      $this.siblings ().show ();
+
+      $todoItem.attr ('readonly', false);
+    });
+  };
+
+  let $checkButtonState = () => {
+
+    let $checkbox = $('.checkbox');
+
+    $checkbox.change (function () {
+        
+      let $checked = Array.from ($checkbox).some (c => c.checked === true)
+        , $doneTodo = $('.done-todo')
+        , $deleteTodo = $('.delete-todo')
+        ;
+
+      if ($checked) {
+        $doneTodo.attr ('disabled', false);
+        $deleteTodo.attr ('disabled', false);
+      }
+
+      else {
+        $doneTodo.attr ('disabled', true);
+        $deleteTodo.attr ('disabled', true);
+      }
+    });
+  };
+
+  let $retrieve = () => {
+
+    axios.get ('http://localhost:3000/')
+      .then (res => {
+
+        $todolist = res.data.map (todo => {
+          todo.checked = false;
+          return todo;
+        });
+
+        console.log ($todolist);
+        
+        let $inputGroup = 
+          `<div class="input-group mt-3">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+
+                <input class="checkbox" type="checkbox" aria-label="Checkbox for following text input">
+
+              </div>
+            </div>
+
+            <input value="" readonly type="text" class="todo-item form-control">
+
+            <div class="edit-button">
+              <button class="edit-todo mx-1 btn btn-warning">Edit!</button>
+              <button class="update-todo mx-1 btn btn-success">Confirm!</button>
+              <button class="edit-cancel mx-1 btn btn-danger">Cancel!</button>
+            </div>
+
+          </div>`;
+
+        let $todoList = $('.todo-list');
+
+        $todoList.text (' ');
+
+        $todolist.forEach ((todo, i) => {
+          $todoList.append ($inputGroup);
+          $($todoList.find ('.todo-item')[i]).val (todo.todo_item);
+        });
+        
+        // Buttons initialize after retrieve data, so we add event listeners here.
+        $checkButtonState ();
+        $editTodo ();
+        $cancelEdit ();
+        $updateTodo ();
+      });
+  }
+
+  $retrieve ();
+  
+  $('.add-todo').click (function () {
+
+    let newTodo = $('.new-todo').val ();
+
+    console.log (newTodo);
+
+    // axios.post ('http://localhost:3000/add', {})
+    axios.post ('http://localhost:3000/add', {todo_item: newTodo})
+      .then (res => {
+
+        console.log (res.data);
+
+        $retrieve ();
+
+        $('.todo-title').val ('');
+        $('.todo-desc').val ('');
+        $('.submit-date').val ('');
+        $('.new-todo').val ('');
+      })
+      .catch (err => {
+
+        console.log (err);
+        
+        console.log (err.response);
+      })
+  });
+
+  $('.delete-todo').click (function () {
+
+    $('.checkbox').each (function (i) {
+      
+      if ($(this).is (':checked'))
+        $todolist[i].checked = true;
+
+      else {
+        $todolist[i].checked = false;
+      }
+    });
+
+    //? TODO: Refactoring to Closure
+
+    let wantToDelete = {
+      items: [],
+      ids: [],
+    };
+
+    $todolist.forEach (todo => {
+
+      if (todo.checked) {
+        wantToDelete.items.push (todo.todo_item);
+        wantToDelete.ids.push (todo.id);
+      };
+
+      return wantToDelete;
+    });
+
+    //? TODO: Remove comments
+
+    // if (confirm (`Are you sure to delete \"${wantToDelete.items.join ('\", \"')}\"?`)) {
+
+      let $destroyLoader = wantToDelete.ids.map (id => axios.post ('http://localhost:3000/remove', {id: id}));
+
+      Promise.all ($destroyLoader)
+        .then (() => $retrieve ());
+    // }
+  });
+
 });
