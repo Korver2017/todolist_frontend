@@ -122,19 +122,21 @@ $(document).ready (function () {
 
           </div>`;
 
-        $('.todo-list').text (' ');
+        let $todoList = $('.todo-list');
+
+        $todoList.text (' ');
 
         $todolist.forEach ((todo, i) => {
-          $('.todo-list').append ($inputGroup);
-          $($('.todo-list').find ('.todo-item')[i]).val (todo.todo_item);
+          $todoList.append ($inputGroup);
+          $($todoList.find ('.todo-item')[i]).val (todo.todo_item);
         });
-
-        //? TODO: Check Here
-
-        // Listen to change event of checkbox, then switch "DONE!" & "DELETE!" button state
         
-        // Buttons state have to wait for todo list initialize, so we add function after retrieve data
+        // Buttons state have to wait for todo list initialize, so we add function after retrieve data.
+
+        // Listen to change event of checkbox, then switch to "DONE!" & "DELETE!" button state.
         $checkButtonState ();
+
+        // Listen to click event then switch to "Confirm!" & "Cancel!" button state.
         $editTodo ();
       });
   }
