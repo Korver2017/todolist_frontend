@@ -32,7 +32,7 @@ $(document).ready (function () {
         , $todoItem = $($('.todo-item')[$index])
         , $id = $todolist[$index].id
         ;
-        
+
       $todoItem.attr ('readonly', true);
 
       axios.put ('http://localhost:3000/update', {id: $id, todo_item: $todoItem.val ()})
@@ -63,11 +63,6 @@ $(document).ready (function () {
 
       $todoItem.attr ('readonly', false);
     });
-
-    //? TODO: Check 2 below function
-
-    $cancelEdit ();
-    $updateTodo ();
   };
 
   let $checkButtonState = () => {
@@ -134,13 +129,11 @@ $(document).ready (function () {
           $($todoList.find ('.todo-item')[i]).val (todo.todo_item);
         });
         
-        // Buttons state have to wait for todo list initialize, so we add function after retrieve data.
-
-        // Listen to change event of checkbox, then switch to "DONE!" & "DELETE!" button state.
+        // Buttons initialize after retrieve data, so we add event listeners here.
         $checkButtonState ();
-
-        // Listen to click event then switch to "Confirm!" & "Cancel!" button state.
         $editTodo ();
+        $cancelEdit ();
+        $updateTodo ();
       });
   }
 
