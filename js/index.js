@@ -1,5 +1,7 @@
 $(document).ready (function () {
 
+  //? TODO: Refactor to avoid using global variable.
+
   let $todolist
     , $updateData
     ;
@@ -24,22 +26,22 @@ $(document).ready (function () {
     
     $('.update-todo').click (function () {
 
-      let $editButton = $(this).parent ();
-
-      let $index = $editButton.parent ().index ()
+      let $this = $(this)
+        , $editButton = $this.parent ()
+        , $index = $editButton.parent ().index ()
         , $todoItem = $($('.todo-item')[$index])
         , $id = $todolist[$index].id
         ;
-
+        
       $todoItem.attr ('readonly', true);
 
       axios.put ('http://localhost:3000/update', {id: $id, todo_item: $todoItem.val ()})
         .then (res => {
 
-          console.log (res.data);
-
-          $editButton.show ();
-          $editButton.siblings ().hide ();
+          let $editTodo = $($('.edit-todo')[$index]);
+          
+          $editTodo.show ();
+          $editTodo.siblings ().hide ();
           $retrieve ();
         });
     });
@@ -53,12 +55,13 @@ $(document).ready (function () {
 
       let $this = $(this)
         , $index = $editTodo.index ($this)
+        , $todoItem = $($('.todo-item')[$index]);
         ;
 
       $this.hide ();
       $this.siblings ().show ();
 
-      $($('.todo-item')[$index]).attr ('readonly', false);
+      $todoItem.attr ('readonly', false);
     });
 
     //? TODO: Check 2 below function
